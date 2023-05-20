@@ -33,7 +33,7 @@ To start using the JamuIN backend API, follow the steps below:
 
 ### Installation
 
-1. Clone the repository: git clone https://github.com/your-username/jamuin-backend.git
+1. Clone the repository: git clone https://github.com/JamuIn/backend-API.git
 2. Install the dependencies: **composer install**
 3. Create a new MySQL database for the project
 4. Configure the database connection in the .env file

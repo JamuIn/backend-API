@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RekomendasiJamu\JamuController;
 use App\Http\Controllers\RekomendasiJamu\IngredientController;
 use App\Http\Controllers\RekomendasiJamu\JamuCategoryController;
+use App\Http\Controllers\RekomendasiJamu\IngredientJamuController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,7 +22,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// ROUTES FOR REKOMEDASI JAMU
 Route::apiResource('/jamu', JamuController::class);
 Route::apiResource('/jamu-categories', JamuCategoryController::class);
 Route::post('/ingredients/{id}', [IngredientController::class, 'updateIngredient']);
 Route::apiResource('/ingredients', IngredientController::class);
+
+// Many-to-many relationship for jamu and ingredients
+Route::post('/jamu/{jamuId}/ingredients', [IngredientJamuController::class, 'attachIngredientToJamu'])
+    ->name('jamu.ingredients.attach');
+Route::delete('/jamu/{jamuId}/ingredients/{ingredientId}', [IngredientJamuController::class, 'detachIngredientFromJamu'])
+    ->name('jamu.ingredients.detach');

@@ -2,6 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\RekomendasiJamu\JamuController;
+use App\Http\Controllers\RekomendasiJamu\IngredientController;
+use App\Http\Controllers\RekomendasiJamu\JamuCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +20,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::apiResource('/jamu', JamuController::class);
+Route::apiResource('/jamu-categories', JamuCategoryController::class);
+Route::post('/ingredients/{id}', [IngredientController::class, 'updateIngredient']);
+Route::apiResource('/ingredients', IngredientController::class);

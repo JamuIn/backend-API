@@ -6,9 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\RekomendasiJamu\Jamu;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Spatie\Permission\Middleware\RoleMiddleware;
 
 class JamuController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['auth:sanctum', 'role:admin'])->except(['index', 'show']);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -36,9 +41,15 @@ class JamuController extends Controller
             'steps' => 'required|string',
             'source' => 'nullable|string',
         ]);
-
         $jamu = Jamu::create($request->all());
-        return response()->json(['data' => $jamu], Response::HTTP_CREATED);
+        return response()->json(
+            [
+                'message' => 'Jamu has succesfully added',
+                'data' => $jamu
+            ],
+            Response::HTTP_CREATED
+        );
+        return response()->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
     }
 
     /**

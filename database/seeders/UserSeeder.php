@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\User;
+use Illuminate\Support\Str;
+use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Traits\HasRoles;
 
 class UserSeeder extends Seeder
@@ -14,32 +16,47 @@ class UserSeeder extends Seeder
     public function run()
     {
         // Create roles
-        $adminRole = Role::create(['guard_name' => 'api', 'name' => 'admin']);
-        $sellerRole = Role::create(['guard_name' => 'api', 'name' => 'seller']);
-        $customerRole = Role::create(['guard_name' => 'api', 'name' => 'customer']);
+        $customerRole = Role::create(['name' => 'customer']);
+        $adminRole = Role::create(['name' => 'admin']);
+        $sellerRole = Role::create(['name' => 'seller']);
 
-        // Create admin user
-        $adminUser = User::create([
-            'username' => 'admin',
-            'email' => 'admin@example.com',
-            'password' => bcrypt('admin123'),
-        ]);
-        $adminUser->assignRole($adminRole->name);
-
-        // Create seller user
-        $sellerUser = User::create([
-            'username' => 'seller',
-            'email' => 'seller@example.com',
-            'password' => bcrypt('seller123'),
-        ]);
-        $sellerUser->assignRole($sellerRole->name);
-
-        // Create customer user
+        // Create users
         $customerUser = User::create([
-            'username' => 'customer',
-            'email' => 'customer@example.com',
-            'password' => bcrypt('customer123'),
+            'full_name' => 'John Doe',
+            'username' => 'johndoe',
+            'email' => 'johndoe@example.com',
+            'phone_number' => '1234567890',
+            'password' => Hash::make('password'),
+            'address' => '123 Main St',
+            'email_verified_at' => now(),
+            'remember_token' => Str::random(10),
         ]);
-        $customerUser->assignRole($customerRole->name);
+
+        $adminUser = User::create([
+            'full_name' => 'Admin',
+            'username' => 'administrator',
+            'email' => 'admin@jamuin.com',
+            'phone_number' => '0987654321',
+            'password' => Hash::make('admin111'),
+            'address' => '456 Elm St',
+            'email_verified_at' => now(),
+            'remember_token' => Str::random(10),
+        ]);
+
+        $sellerUser = User::create([
+            'full_name' => 'Bob Johnson',
+            'username' => 'bobjohnson',
+            'email' => 'bobjohnson@example.com',
+            'phone_number' => '5555555555',
+            'password' => Hash::make('password'),
+            'address' => '789 Oak St',
+            'email_verified_at' => now(),
+            'remember_token' => Str::random(10),
+        ]);
+
+        // Assign roles to users
+        $customerUser->assignRole($customerRole);
+        $adminUser->assignRole($adminRole);
+        $sellerUser->assignRole($sellerRole);
     }
 }

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Marketplace\StoreController;
 use App\Http\Controllers\RekomendasiJamu\JamuController;
+use App\Http\Controllers\Marketplace\StoreProductController;
 use App\Http\Controllers\RekomendasiJamu\IngredientController;
 use App\Http\Controllers\RekomendasiJamu\JamuCategoryController;
 use App\Http\Controllers\RekomendasiJamu\IngredientJamuController;
@@ -40,7 +41,11 @@ Route::post('/jamu/{jamuId}/ingredients', [IngredientJamuController::class, 'att
 Route::delete('/jamu/{jamuId}/ingredients/{ingredientId}', [IngredientJamuController::class, 'detachIngredientFromJamu'])
     ->name('jamu.ingredients.detach');
 
+// MARKETPLACE ROUTE -PRODUCTS
+Route::get('/products', [StoreProductController::class, 'indexAll'])->name('products.indexAll');
+Route::post('/stores/{store}/products/{product}', [StoreProductController::class, 'updateProduct'])->name('products.update');
+Route::resource('/stores.products', StoreProductController::class)->except(['create', 'edit']);
 
-// MARKETPLACE ROUTE
-Route::apiResource('/stores', StoreController::class);
+// MARKETPLACE ROUTE -STORE
 Route::post('/stores/{id}', [StoreController::class, 'updateStore']);
+Route::apiResource('/stores', StoreController::class);

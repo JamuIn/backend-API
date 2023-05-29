@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\RekomendasiJamu;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\RekomendasiJamu\Jamu;
-use Illuminate\Http\Request;
+use App\Models\RekomendasiJamu\Ingredient;
 use Symfony\Component\HttpFoundation\Response;
 use Spatie\Permission\Middleware\RoleMiddleware;
 
@@ -42,6 +43,13 @@ class JamuController extends Controller
             'source' => 'nullable|string',
         ]);
         $jamu = Jamu::create($request->all());
+        // attach each ingredient to jamu
+        $ingredients = explode(',', $request->ingredients);
+        foreach ($ingredients as $ingredient) {
+            $target_ingredient = Ingredient::query()
+                ->where('name', $ingredient)->firstOrFail();
+            $jamu->ingredients()->attach($target_ingredient);
+        }
         return response()->json(
             [
                 'message' => 'Jamu has succesfully added',

@@ -19,9 +19,10 @@ class IngredientJamuController extends Controller
         $ingredient = Ingredient::query()->findOrFail($request->input('ingredient_id'));
         $jamu = Jamu::query()->findOrFail($jamuId);
 
-        $jamu->ingredients()->attach($ingredient);
+        var_dump($ingredient);
+        // $jamu->ingredients()->attach($ingredient);
 
-        return response()->json(['message' => 'Ingredient attached to Jamu successfully.'], Response::HTTP_CREATED);
+        // return response()->json(['message' => 'Ingredient attached to Jamu successfully.'], Response::HTTP_CREATED);
     }
 
     public function detachIngredientFromJamu($jamuId, $ingredientId)

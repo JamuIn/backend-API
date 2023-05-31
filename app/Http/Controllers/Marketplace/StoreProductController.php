@@ -143,7 +143,7 @@ class StoreProductController extends Controller
             }
             // update image
             $image = $request->file('image');
-            $imageName = time() . '_' . $image->getClientOriginalName();
+            $imageName = time() . '_' . $request->file('image')->extension();
             $image->move(public_path('assets/marketplace/user-store/products'), $imageName);
             $image_url = asset('assets/marketplace/user-store/products/' . $imageName);
             $target_product->image = $image_url;
@@ -200,7 +200,7 @@ class StoreProductController extends Controller
     {
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $imageName = time() . '_' . $image->getClientOriginalName();
+            $imageName = time() . '_' . $request->file('image')->extension();
             $image->move(public_path('assets/marketplace/user-store/products'), $imageName);
             $image_url = asset('assets/marketplace/user-store/products/' . $imageName);
             return $image_url;

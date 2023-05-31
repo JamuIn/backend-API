@@ -30,9 +30,10 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 
 // ROUTES FOR REKOMEDASI JAMU
+Route::post('/jamu/{id}', [JamuController::class, 'updateJamu'])->name('jamu.update');
+Route::post('/ingredients/{id}', [IngredientController::class, 'updateIngredient']);
 Route::apiResource('/jamu', JamuController::class);
 Route::apiResource('/jamu-categories', JamuCategoryController::class);
-Route::post('/ingredients/{id}', [IngredientController::class, 'updateIngredient']);
 Route::apiResource('/ingredients', IngredientController::class);
 
 // Many-to-many relationship for jamu and ingredients

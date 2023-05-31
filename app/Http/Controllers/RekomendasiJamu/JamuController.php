@@ -41,15 +41,23 @@ class JamuController extends Controller
             'ingredients' => 'required|string',
             'steps' => 'required|string',
             'source' => 'nullable|string',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-        $jamu = Jamu::create($request->all());
-        // attach each ingredient to jamu
-        $ingredients = explode(',', $request->ingredients);
-        foreach ($ingredients as $ingredient) {
-            $target_ingredient = Ingredient::query()
-                ->where('name', $ingredient)->firstOrFail();
-            $jamu->ingredients()->attach($target_ingredient);
-        }
+
+        $imageName = time() . '.' . $request->file('image')->extension();
+        $request->image->move(public_path('assets/rekomendasi-jamu/jamu'), $imageName);
+        $imagePath = asset('assets/rekomendasi-jamu/jamu/' . $imageName);
+
+        $jamu = Jamu::create([
+            'category_id' => (int)$request->category_id,
+            'name' => $request->name,
+            'description' => $request->description,
+            'ingredients' => $request->ingredients,
+            'steps' => $request->steps,
+            'source' => $request->source,
+            'image' => $imagePath
+        ]);
+
         return response()->json(
             [
                 'message' => 'Jamu has succesfully added',
@@ -66,10 +74,23 @@ class JamuController extends Controller
      * @param  int  $id
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function show($id)
+    public function show(Jamu $jamu)
     {
-        $jamu = Jamu::findOrFail($id);
+        $jamu = Jamu::find($jamu->id);
         return response()->json(['data' => $jamu], Response::HTTP_OK);
+    }
+
+    // DUMMY UPDATE METHOD
+    public function update(Request $request)
+    {
+        if ($request->method() === 'PUT') {
+            return response()->json(
+                [
+                    'message' => 'The PUT method is not supported for updating Ingredients. Please use the POST method instead.'
+                ],
+                Response::HTTP_METHOD_NOT_ALLOWED
+            );
+        };
     }
 
     /**
@@ -79,8 +100,10 @@ class JamuController extends Controller
      * @param  int  $id
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function update(Request $request, $id)
+    public function updateJamu(Request $request, $id)
     {
+        $jamu = Jamu::findOrFail($id);
+
         $request->validate([
             'category_id' => 'required|integer',
             'name' => 'required|string',
@@ -88,13 +111,38 @@ class JamuController extends Controller
             'ingredients' => 'required|string',
             'steps' => 'required|string',
             'source' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $jamu = Jamu::findOrFail($id);
-        $jamu->update($request->all());
+        if ($request->hasFile('image')) {
+            // delete old image
+            if ($jamu->image != '') {
+                $old_image = substr(strrchr($jamu->image, "/"), 1);
+                $this->deleteImageFile($old_image);
+            }
+
+            $imageName = time() . '.' . $request->file('image')->extension();
+            $destinationPath = public_path('assets/rekomendasi-jamu/jamu');
+            $request->file('image')->move($destinationPath, $imageName);
+
+            $image_url = asset('assets/rekomendasi-jamu/jamu/' . $imageName);
+            $jamu->image = $image_url;
+
+            $jamu->save();
+        }
+
+        $jamu->update([
+            'category_id' => (int)$request->category_id,
+            'name' => $request->name,
+            'description' => $request->description,
+            'ingredients' => $request->ingredients,
+            'steps' => $request->steps,
+            'source' => $request->source
+        ]);
 
         return response()->json(['data' => $jamu], Response::HTTP_OK);
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -105,8 +153,19 @@ class JamuController extends Controller
     public function destroy($id)
     {
         $jamu = Jamu::findOrFail($id);
+        $image = substr(strrchr($jamu->image, "/"), 1);
+        $this->deleteImageFile($image);
+
         $jamu->delete();
 
         return response()->json(['message' => 'Jamu deleted successfully'], Response::HTTP_OK);
+    }
+
+    protected function deleteImageFile($fileName)
+    {
+        $filePath = public_path('assets/rekomendasi-jamu/jamu/' . $fileName);
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
     }
 }

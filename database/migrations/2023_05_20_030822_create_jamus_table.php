@@ -23,6 +23,7 @@ return new class extends Migration
             $table->text('ingredients');
             $table->text('steps');
             $table->text('source')->nullable();
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }

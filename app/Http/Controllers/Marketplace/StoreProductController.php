@@ -7,6 +7,8 @@ use App\Models\Marketplace\Store;
 use App\Models\Marketplace\Product;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\ProductResource;
+use App\Models\RekomendasiJamu\Ingredient;
 use Symfony\Component\HttpFoundation\Response;
 
 class StoreProductController extends Controller
@@ -23,16 +25,14 @@ class StoreProductController extends Controller
     public function index(Store $store)
     {
         $products = Product::where('store_id', $store->id)->get()->all();
-
-        return response()->json([
-            'products' => $products,
-        ], Response::HTTP_OK);
+        $product_resources = ProductResource::collection($products);
+        return response()->json(['data' => $product_resources], Response::HTTP_OK);
     }
 
     // SHOW ALL PRODUCT 
     public function indexAll()
     {
-        $products = Product::all();
+        $products = ProductResource::collection(Product::all());
 
         return response()->json([
             'products' => $products,
@@ -55,6 +55,7 @@ class StoreProductController extends Controller
 
         $request->validate([
             'jamu_category_id' => 'required|integer',
+            'main_ingredient_id' => 'required|integer',
             'name' => 'required|string',
             'description' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -73,10 +74,13 @@ class StoreProductController extends Controller
             'price' => $request->input('price'),
             'stock' => $request->input('stock'),
         ]);
+        // attach main ingredient to Product
+        $ingredient = Ingredient::query()->findOrFail($request->input('main_ingredient_id'));
+        $product->ingredients()->attach($ingredient);
 
         return response()->json([
-            'message' => 'New Product ' . $product->name . ' was successfully created',
-            'product' => $product,
+            'message' => 'New Product of ' . $product->name . ' was successfully created',
+            'product' => new ProductResource($product),
         ], Response::HTTP_CREATED);
     }
 
@@ -91,28 +95,8 @@ class StoreProductController extends Controller
         $product_in_store = Product::where('id', $product->id)->where('store_id', $store->id)->first();
 
         return response()->json([
-            'product' => $product_in_store,
+            'product' => new ProductResource($product_in_store),
         ], Response::HTTP_OK);
-    }
-
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request)
-    {
-        if ($request->method() === 'PUT') {
-            return response()->json(
-                [
-                    'message' => 'The PUT method is not supported for updating Store.  Please use the POST method instead.'
-                ],
-                Response::HTTP_METHOD_NOT_ALLOWED
-            );
-        };
     }
 
     public function updateProduct(Request $request, $store, $product)
@@ -143,7 +127,7 @@ class StoreProductController extends Controller
             }
             // update image
             $image = $request->file('image');
-            $imageName = time() . '_' . $request->file('image')->extension();
+            $imageName = time() . '.' . $request->file('image')->extension();
             $image->move(public_path('assets/marketplace/user-store/products'), $imageName);
             $image_url = asset('assets/marketplace/user-store/products/' . $imageName);
             $target_product->image = $image_url;
@@ -160,7 +144,7 @@ class StoreProductController extends Controller
         ]);
 
         return response()->json([
-            'updated product' => $target_product
+            'updated product' => new ProductResource($target_product)
         ], Response::HTTP_CREATED);
     }
 
@@ -181,10 +165,12 @@ class StoreProductController extends Controller
 
         $image = substr(strrchr($product->image, "/"), 1);
         $this->deleteFileIfExists($image);
+        $ingredient = Ingredient::query()->findOrFail($product->ingredients()->first()->id);
+        $product->ingredients()->detach($ingredient);
 
         $product->delete();
 
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        return response()->json(['message' => 'Product deleted successfully'], Response::HTTP_OK);
     }
 
 
@@ -200,7 +186,7 @@ class StoreProductController extends Controller
     {
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $imageName = time() . '_' . $request->file('image')->extension();
+            $imageName = time() . '.' . $request->file('image')->extension();
             $image->move(public_path('assets/marketplace/user-store/products'), $imageName);
             $image_url = asset('assets/marketplace/user-store/products/' . $imageName);
             return $image_url;

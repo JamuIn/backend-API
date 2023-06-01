@@ -8,6 +8,7 @@ use App\Http\Controllers\RekomendasiJamu\JamuController;
 use App\Http\Controllers\Marketplace\StoreProductController;
 use App\Http\Controllers\RekomendasiJamu\IngredientController;
 use App\Http\Controllers\RekomendasiJamu\JamuCategoryController;
+use App\Http\Controllers\Marketplace\IngredientProductController;
 use App\Http\Controllers\RekomendasiJamu\IngredientJamuController;
 
 /*
@@ -46,6 +47,12 @@ Route::delete('/jamu/{jamuId}/ingredients/{ingredientId}', [IngredientJamuContro
 Route::get('/products', [StoreProductController::class, 'indexAll'])->name('products.indexAll');
 Route::post('/stores/{store}/products/{product}', [StoreProductController::class, 'updateProduct'])->name('products.update');
 Route::resource('/stores.products', StoreProductController::class)->except(['create', 'edit']);
+
+// Many-to-many relationship for product and ingredients
+Route::post('/product/{productId}/ingredients', [IngredientProductController::class, 'attachIngredientToProduct'])
+    ->name('product.ingredients.attach');
+Route::delete('/product/{productId}/ingredients/{ingredientId}', [IngredientProductController::class, 'detachIngredientFromProduct'])
+    ->name('product.ingredients.detach');
 
 // MARKETPLACE ROUTE -STORE
 Route::post('/stores/{id}', [StoreController::class, 'updateStore']);

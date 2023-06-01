@@ -4,6 +4,7 @@ namespace App\Http\Controllers\RekomendasiJamu;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\JamuResource;
 use App\Models\RekomendasiJamu\Jamu;
 use App\Models\RekomendasiJamu\Ingredient;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +23,8 @@ class JamuController extends Controller
      */
     public function index()
     {
-        $jamu = Jamu::all();
+        // we use JamuResource to show attached main ingredient
+        $jamu = JamuResource::collection(Jamu::all());
         return response()->json(['data' => $jamu], Response::HTTP_OK);
     }
 
@@ -36,6 +38,7 @@ class JamuController extends Controller
     {
         $request->validate([
             'category_id' => 'required|integer',
+            'main_ingredient_id' => 'required|integer',
             'name' => 'required|string',
             'description' => 'required|string',
             'ingredients' => 'required|string',
@@ -57,11 +60,14 @@ class JamuController extends Controller
             'source' => $request->source,
             'image' => $imagePath
         ]);
+        // attach main ingredient to Jamu
+        $ingredient = Ingredient::query()->findOrFail($request->input('main_ingredient_id'));
+        $jamu->ingredients()->attach($ingredient);
 
         return response()->json(
             [
                 'message' => 'Jamu has succesfully added',
-                'data' => $jamu
+                'data' => new JamuResource($jamu)
             ],
             Response::HTTP_CREATED
         );
@@ -76,21 +82,9 @@ class JamuController extends Controller
      */
     public function show(Jamu $jamu)
     {
-        $jamu = Jamu::find($jamu->id);
-        return response()->json(['data' => $jamu], Response::HTTP_OK);
-    }
-
-    // DUMMY UPDATE METHOD
-    public function update(Request $request)
-    {
-        if ($request->method() === 'PUT') {
-            return response()->json(
-                [
-                    'message' => 'The PUT method is not supported for updating Ingredients. Please use the POST method instead.'
-                ],
-                Response::HTTP_METHOD_NOT_ALLOWED
-            );
-        };
+        return response()->json([
+            'data' => new JamuResource($jamu)
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -140,7 +134,9 @@ class JamuController extends Controller
             'source' => $request->source
         ]);
 
-        return response()->json(['data' => $jamu], Response::HTTP_OK);
+        return response()->json([
+            'data' => new JamuResource($jamu)
+        ], Response::HTTP_OK);
     }
 
 
@@ -155,6 +151,8 @@ class JamuController extends Controller
         $jamu = Jamu::findOrFail($id);
         $image = substr(strrchr($jamu->image, "/"), 1);
         $this->deleteImageFile($image);
+        $ingredient = Ingredient::query()->findOrFail($jamu->ingredients()->first()->id);
+        $jamu->ingredients()->detach($ingredient);
 
         $jamu->delete();
 

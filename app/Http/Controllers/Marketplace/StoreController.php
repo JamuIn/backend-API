@@ -62,16 +62,26 @@ class StoreController extends Controller
         }
 
         // Create a new store using firstOrCreate
-        $store = Store::firstOrCreate(
+        $store = Store::create(
             [
                 'user_id' => $user->id,
-                'name' => $request->name
-            ],
-            [
+                'name' => $request->name,
                 'description' => $request->description,
                 'payment_address' => $request->payment_address
             ]
         );
+
+        if ($request->hasFile('image')) {
+            $request->validate([
+                'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+
+            $imageName = time() . '.' . $request->file('image')->extension();
+            $request->file('image')->move(public_path('assets/marketplace/user-store'), $imageName);
+            $imageUrl = asset('assets/marketplace/user-store/' . $imageName);
+            $store->image = $imageUrl;
+            $store->save();
+        }
 
         return response()->json([
             'message' => 'Store created successfully',
@@ -167,13 +177,14 @@ class StoreController extends Controller
 
             $imageName = time() . '.' . $request->file('image')->extension();
             $request->file('image')->move(public_path('assets/marketplace/user-store'), $imageName);
+            $imageUrl = asset('assets/marketplace/user-store/' . $imageName);
 
             // Delete the old image file
             if ($store->image) {
-                $this->deleteImageFile($store->image);
+                $image = substr(strrchr($store->image, "/"), 1);
+                $this->deleteImageFile($image);
             }
-            $store->image = $imageName;
-            $imageUrl = $store->image ? asset('assets/marketplace/user-store/' . $store->image) : null;
+            $store->image = $imageUrl;
         }
 
         $store->name = $request->name;
@@ -183,8 +194,7 @@ class StoreController extends Controller
 
         return response()->json([
             'message' => 'Store updated successfully',
-            'store' => $store,
-            'store_img' => $imageUrl
+            'store' => $store
         ], Response::HTTP_OK);
     }
 
@@ -217,6 +227,10 @@ class StoreController extends Controller
             ], Response::HTTP_FORBIDDEN);
         }
 
+        if ($store->image != '' || $store->image != null) {
+            $image = substr(strrchr($store->image, "/"), 1);
+            $this->deleteImageFile($image);
+        }
         $store->delete();
 
         return response()->json([

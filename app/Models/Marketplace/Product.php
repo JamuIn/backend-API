@@ -15,4 +15,9 @@ class Product extends Model
     {
         return $this->belongsTo(Store::class);
     }
+
+    public function ingredients()
+    {
+        return $this->belongsToMany('App\Models\RekomendasiJamu\Ingredient');
+    }
 }

@@ -21,11 +21,19 @@ class JamuController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         // we use JamuResource to show attached main ingredient
-        $jamu = JamuResource::collection(Jamu::all());
-        return response()->json(['data' => $jamu], Response::HTTP_OK);
+        $jamu_query = JamuResource::collection(Jamu::all());
+
+        if ($request->ingredient) {
+            $jamu_query = Jamu::with('ingredients')
+                ->whereHas('ingredients', function ($query) use ($request) {
+                    $query->where('ingredient_id', $request->ingredient);
+                })->get();
+            $jamu_query = JamuResource::collection($jamu_query);
+        }
+        return response()->json(['data' => $jamu_query], Response::HTTP_OK);
     }
 
     /**

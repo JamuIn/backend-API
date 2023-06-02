@@ -115,19 +115,6 @@ class StoreController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function update(Request $request, $id)
-    {
-        if ($request->method() === 'PUT') {
-            return response()->json(
-                [
-                    'message' => 'The PUT method is not supported for updating Store.  
-                    Please use the POST method instead.'
-                ],
-                Response::HTTP_METHOD_NOT_ALLOWED
-            );
-        };
-    }
-
     /**
      * Update the specified store in storage.
      *

@@ -16,7 +16,6 @@ class Jamu extends Model
         return $this->belongsTo('App\Models\RekomendasiJamu\JamuCategory');
     }
 
-
     public function ingredients()
     {
         return $this->belongsToMany('App\Models\RekomendasiJamu\Ingredient');

@@ -13,14 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('ingredient_product', function (Blueprint $table) {
+        Schema::create('order_product', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('ingredient_id')->unsigned()->nullable();
-            $table->foreign('ingredient_id')->references('id')->on('ingredients')->onUpdate('cascade')
+            $table->integer('order_id')->unsigned()->nullable();
+            $table->foreign('order_id')->references('id')->on('orders')->onUpdate('cascade')
                 ->onDelete('set null');
             $table->integer('product_id')->unsigned()->nullable();
             $table->foreign('product_id')->references('id')->on('products')->onUpdate('cascade')
                 ->onDelete('set null');
+            $table->integer('quantity');
+            $table->integer('price');
         });
     }
 
@@ -31,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ingredient_products');
+        Schema::dropIfExists('order_products');
     }
 };

@@ -20,6 +20,7 @@ class ProductResource extends JsonResource
             $ingredient = $ingredient->name;
         }
         return [
+            'id' => $this->id,
             'jamu_category_id' => $this->jamu_category_id,
             'main_ingredient' => $ingredient,
             'name' => $this->name,

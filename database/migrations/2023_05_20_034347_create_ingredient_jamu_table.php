@@ -21,7 +21,6 @@ return new class extends Migration
             $table->integer('jamu_id')->unsigned()->nullable();
             $table->foreign('jamu_id')->references('id')->on('jamu')->onUpdate('cascade')
                 ->onDelete('set null');
-            $table->timestamps();
         });
     }
 

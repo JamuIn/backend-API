@@ -63,5 +63,9 @@ Route::get('/user/{userId}/carts', [CartController::class, 'getUserCart']);
 Route::apiResource('/carts', CartController::class);
 // MARKETPLACE --ORDERS
 Route::get('/user/{userId}/orders', [OrderController::class, 'getUserOrder']);
+Route::post('/orders/{order}', [OrderController::class, 'updateOrder']);
 Route::apiResource('/orders', OrderController::class);
+
+// MARKETPLACE --CHECKOUT
+Route::get('/confirm-checkout', [CartProductsController::class, 'confirmCheckout']);
 Route::post('/checkout', [CartProductsController::class, 'checkout']);

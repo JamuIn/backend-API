@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Marketplace;
 use Illuminate\Http\Request;
 use App\Models\Marketplace\Cart;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CartResource;
+use App\Models\Marketplace\Product;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -22,9 +24,11 @@ class CartController extends Controller
      */
     public function index()
     {
-        $carts = Cart::all();
+        $carts = CartResource::collection(Cart::all());
 
-        return response()->json(['carts' => $carts], Response::HTTP_OK);
+        return response()->json([
+            'carts' => $carts
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -35,7 +39,7 @@ class CartController extends Controller
      */
     public function getUserCart($userId)
     {
-        $carts = Cart::where('user_id', $userId)->get();
+        $carts = CartResource::collection(Cart::where('user_id', $userId)->get());
 
         return response()->json(['carts' => $carts], Response::HTTP_OK);
     }
@@ -53,13 +57,23 @@ class CartController extends Controller
             'quantity' => 'required|integer',
         ]);
 
+        $product = Product::find($request->product_id);
+        // check product stock
+        if ($product->stock < $request->quantity) {
+            return response()->json([
+                'message' => 'Error. Product of ' . $product->name . ' not found in stock'
+            ], Response::HTTP_NOT_ACCEPTABLE);
+        }
+
         $cart = Cart::create([
             'user_id' => Auth::user()->id,
             'product_id' => $request->input('product_id'),
             'quantity' => $request->input('quantity'),
         ]);
 
-        return response()->json(['cart' => $cart], Response::HTTP_CREATED);
+        return response()->json([
+            'cart' => new CartResource($cart)
+        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -70,7 +84,9 @@ class CartController extends Controller
      */
     public function show(Cart $cart)
     {
-        return response()->json(['cart' => $cart], Response::HTTP_OK);
+        return response()->json([
+            'cart' => new CartResource($cart)
+        ], Response::HTTP_OK);
     }
 
     /**

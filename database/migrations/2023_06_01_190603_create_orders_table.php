@@ -19,6 +19,8 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')
                 ->onDelete('cascade');
             $table->integer('total_price')->default(0);
+            $table->string('status');
+            $table->string('payment_proof')->nullable();
             $table->timestamps();
         });
     }

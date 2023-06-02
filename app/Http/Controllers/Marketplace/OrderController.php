@@ -53,11 +53,13 @@ class OrderController extends Controller
     {
         $request->validate([
             'total_price' => 'required|integer',
+            'status' => 'required|string'
         ]);
 
         $order = new Order;
         $order->user_id = auth()->user()->id;
         $order->total_price = $request->input('total_price');
+        $order->status = $request->input('status');
         $order->save();
 
         return response()->json(['order' => $order], Response::HTTP_CREATED);
@@ -81,13 +83,32 @@ class OrderController extends Controller
      * @param  \App\Models\Order  $order
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function update(Request $request, Order $order)
+    public function updateOrder(Request $request, Order $order)
     {
         $request->validate([
             'total_price' => 'required|integer',
+            'status' => 'required|string'
         ]);
 
+        if ($request->hasFile('payment_proof')) {
+            $request->validate([
+                'payment_proof' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+
+            $imageName = time() . '.' . $request->file('payment_proof')->extension();
+            $request->file('payment_proof')->move(public_path('assets/marketplace/payment_proofs'), $imageName);
+            $imageUrl = asset('assets/marketplace/payment_proofs/' . $imageName);
+
+            // Delete the old image file
+            if ($order->payment_proof) {
+                $image = substr(strrchr($order->payment_proof, "/"), 1);
+                $this->deleteImageFile($image);
+            }
+            $order->payment_proof = $imageUrl;
+        }
+
         $order->total_price = $request->input('total_price');
+        $order->status = $request->input('status');
         $order->save();
 
         return response()->json(['order' => $order], Response::HTTP_OK);

@@ -7,10 +7,35 @@ use App\Models\Marketplace\Cart;
 use App\Models\Marketplace\Order;
 use App\Models\Marketplace\Product;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CartResource;
 use Symfony\Component\HttpFoundation\Response;
 
 class CartProductsController extends Controller
 {
+
+    public function confirmCheckout()
+    {
+        $user = auth()->user();
+        $carts = CartResource::collection(Cart::where('user_id', $user->id)->get());
+        $address = $user->address;
+        $payment_address = "Gopay 0881 2345 6789 - A.n Hakam Royhan A";
+
+        // get product detail
+        $product_detail = [];
+        foreach ($carts as $cart) {
+            $product_detail[] = $cart->product->name . " x" . $cart->quantity . " = " . ($cart->product->price * $cart->quantity);
+        }
+
+        return response()->json([
+            'message' => 'Confirm Checkout?',
+            'cart' => $carts,
+            'user_address' => $address,
+            'product_detail' => $product_detail,
+            'payment_address' => $payment_address,
+            'shipping cost' => '10000'
+        ], Response::HTTP_OK);
+    }
+
     public function checkout()
     {
         $cart = Cart::with('product')->where('user_id', auth()->user()->id)->get();
@@ -25,14 +50,15 @@ class CartProductsController extends Controller
             ) {
                 return response()->json([
                     'message' => 'Error. Product ' . $cartProduct->product->name . ' not found in stock'
-                ], Response::HTTP_NOT_FOUND);
+                ], Response::HTTP_NOT_ACCEPTABLE);
             }
         }
 
         // create the order
         $order = Order::create([
             'user_id' => auth()->user()->id,
-            'total_price' => 0
+            'total_price' => 0,
+            'status' => 'Unpaid'
         ]);
 
         $products_ordered = [];

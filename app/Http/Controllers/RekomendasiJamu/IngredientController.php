@@ -70,21 +70,6 @@ class IngredientController extends Controller
     }
 
 
-    // DUMMY UPDATE METHOD
-    public function update(Request $request, $id)
-    {
-        if ($request->method() === 'PUT') {
-            return response()->json(
-                [
-                    'message' => 'The PUT method is not supported for updating Ingredients.  
-                    Please use the POST method instead.'
-                ],
-                Response::HTTP_METHOD_NOT_ALLOWED
-            );
-        };
-    }
-
-
     /**
      * Update the specified resource in storage.
      *
@@ -108,22 +93,20 @@ class IngredientController extends Controller
 
             $imageName = time() . '.' . $request->file('image')->extension();
             $request->file('image')->move(public_path('assets/rekomendasi-jamu/ingredients'), $imageName);
+            $imageUrl = asset('assets/rekomendasi-jamu/ingredients/' . $imageName);
 
             // Delete the old image file
             if ($ingredient->image) {
                 $this->deleteImageFile($ingredient->image);
             }
 
-            $ingredient->image = $imageName;
+            $ingredient->image = $imageUrl;
         }
 
         $ingredient->save();
 
-        $imageUrl = $ingredient->image ? asset('assets/rekomendasi-jamu/ingredients/' . $ingredient->image) : null;
-
         return response()->json([
-            'data' => $ingredient,
-            'image_url' => $imageUrl,
+            'data' => $ingredient
         ], Response::HTTP_OK);
     }
 

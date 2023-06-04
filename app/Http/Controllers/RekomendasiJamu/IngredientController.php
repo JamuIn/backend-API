@@ -18,16 +18,7 @@ class IngredientController extends Controller
     {
         $ingredients = Ingredient::all();
 
-        $ingredientsData = $ingredients->map(function ($ingredient) {
-            $imagePath = $ingredient->image ? asset('assets/rekomendasi-jamu/ingredients/' . $ingredient->image) : null;
-            return [
-                'id' => $ingredient->id,
-                'name' => $ingredient->name,
-                'image' => $imagePath,
-            ];
-        });
-
-        return response()->json(['data' => $ingredientsData], Response::HTTP_OK);
+        return response()->json(['data' => $ingredients], Response::HTTP_OK);
     }
 
     /**

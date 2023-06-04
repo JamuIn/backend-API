@@ -58,15 +58,7 @@ class IngredientController extends Controller
     {
         $ingredient = Ingredient::findOrFail($id);
 
-        $imagePath = $ingredient->image ? asset('assets/rekomendasi-jamu/ingredients/' . $ingredient->image) : null;
-
-        $ingredientData = [
-            'id' => $ingredient->id,
-            'name' => $ingredient->name,
-            'image' => $imagePath,
-        ];
-
-        return response()->json(['data' => $ingredientData], Response::HTTP_OK);
+        return response()->json(['data' => $ingredient], Response::HTTP_OK);
     }
 
 

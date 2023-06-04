@@ -45,15 +45,16 @@ class IngredientController extends Controller
 
         $imageName = time() . '.' . $request->image->extension();
         $request->image->move(public_path('assets/rekomendasi-jamu/ingredients'), $imageName);
+        $imagePath = asset('assets/rekomendasi-jamu/ingredients/' . $imageName);
 
         $ingredient = Ingredient::create([
             'name' => $request->name,
-            'image' => $imageName,
+            'image' => $imagePath,
         ]);
 
-        $imagePath = asset('assets/rekomendasi-jamu/ingredients/' . $imageName);
-
-        return response()->json(['data' => $ingredient, 'image_path' => $imagePath], Response::HTTP_CREATED);
+        return response()->json([
+            'data' => $ingredient
+        ], Response::HTTP_CREATED);
     }
 
     /**

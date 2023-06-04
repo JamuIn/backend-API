@@ -22,17 +22,22 @@ class CartProductsController extends Controller
 
         // get product detail
         $product_detail = [];
+        $total_price = 0;
         foreach ($carts as $cart) {
-            $product_detail[] = $cart->product->name . " x" . $cart->quantity . " = " . ($cart->product->price * $cart->quantity);
+            $price = $cart->product->price * $cart->quantity;
+            $product_detail[] = $cart->product->name . " x" . $cart->quantity . " = " . $price;
+            $total_price += $price;
         }
 
         return response()->json([
             'message' => 'Confirm Checkout?',
             'cart' => $carts,
             'user_address' => $address,
-            'product_detail' => $product_detail,
             'payment_address' => $payment_address,
-            'shipping cost' => '10000'
+            'product_detail' => $product_detail,
+            'shipping cost' => 10000,
+            'total_price' => $total_price + 10000
+
         ], Response::HTTP_OK);
     }
 
@@ -62,6 +67,9 @@ class CartProductsController extends Controller
         ]);
 
         $products_ordered = [];
+        $total_price = 0;
+        $payment_address = "Gopay 0881 2345 6789 - A.n Hakam Royhan A";
+
         // attach each product to order in OrderProduct
         foreach ($cart as $cartProduct) {
             $order->products()->attach($cartProduct->product_id, [
@@ -69,20 +77,25 @@ class CartProductsController extends Controller
                 'price' => $cartProduct->product->price
             ]);
             // count total price
-            $order->increment('total_price', $cartProduct->quantity * $cartProduct->product->price);
+            $price = $cartProduct->quantity * $cartProduct->product->price;
+            $order->increment('total_price', $price);
+            $total_price += $price;
             // decrease product stock
             Product::find($cartProduct->product_id)->decrement('stock', $cartProduct->quantity);
             // add product to response
             $products_ordered[] = $cartProduct->product->name . ', quantity: ' . $cartProduct->quantity;
         }
+        // add shipping fee
+        $order->increment('total_price', 10000);
         // delete cart after checkout
         Cart::where('user_id', auth()->user()->id)->delete();
 
         return response()->json([
             'message' => 'Checkout success',
-            'order_id' => $order->id,
-            'order_date' => $order->created_at,
-            'products' => $products_ordered
+            'order' => $order,
+            'products' => $products_ordered,
+            'total_price' => $total_price + 10000,
+            'payment_address' => $payment_address
         ], Response::HTTP_CREATED);
     }
 }

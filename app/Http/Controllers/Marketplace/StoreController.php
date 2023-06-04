@@ -11,6 +11,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 class StoreController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['auth:sanctum', 'role:seller'])->except(['index', 'show']);
+    }
+
     /**
      * Display a listing of the stores.
      *
@@ -34,12 +39,6 @@ class StoreController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        if (!$user->hasRole(['seller', 'admin'])) {
-            return response()->json([
-                'error' => 'Only users with seller or admin role can create a store.'
-            ], Response::HTTP_FORBIDDEN);
-        }
-
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'description' => 'required',
@@ -98,7 +97,7 @@ class StoreController extends Controller
     public function show($id)
     {
         $store = Store::find($id);
-        $user = Auth::user();
+        $user = auth()->user();
 
         if (!$store) {
             return response()->json([
@@ -106,7 +105,7 @@ class StoreController extends Controller
             ], Response::HTTP_NOT_FOUND);
         }
 
-        if ($user->id != $store->user_id && !$user->hasRole(['seller', 'admin'])) {
+        if ($user->id != $store->user_id) {
             $store->setHidden(['payment_address', 'updated_at']);
         }
 
@@ -125,12 +124,6 @@ class StoreController extends Controller
     public function updateStore(Request $request, $id)
     {
         $user = Auth::user();
-        if (!$user->hasAnyRole(['seller', 'admin'])) {
-            return response()->json([
-                'error' => 'Only users with seller or admin role can update a store.'
-            ], Response::HTTP_FORBIDDEN);
-        }
-
         $store = Store::find($id);
 
         if (!$store) {
@@ -194,19 +187,7 @@ class StoreController extends Controller
     public function destroy($id)
     {
         $user = Auth::user();
-        if (!$user->hasAnyRole(['seller', 'admin'])) {
-            return response()->json([
-                'error' => 'Only users with seller or admin role can delete a store.'
-            ], Response::HTTP_FORBIDDEN);
-        }
-
         $store = Store::find($id);
-
-        if (!$store) {
-            return response()->json([
-                'error' => 'Store not found'
-            ], Response::HTTP_NOT_FOUND);
-        }
 
         if ($store->user_id != $user->id) {
             return response()->json([

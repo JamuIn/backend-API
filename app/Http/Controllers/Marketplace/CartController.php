@@ -120,6 +120,6 @@ class CartController extends Controller
     {
         $cart->delete();
 
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        return response()->json(['message' => 'Cart of id ' . $cart->id . ' was successfully deleted'], Response::HTTP_OK);
     }
 }

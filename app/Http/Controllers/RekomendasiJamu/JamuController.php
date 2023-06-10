@@ -90,8 +90,10 @@ class JamuController extends Controller
      */
     public function show(Jamu $jamu)
     {
+        $steps_array = $jamu->steps;
         return response()->json([
-            'data' => new JamuResource($jamu)
+            'data' => new JamuResource($jamu),
+            'steps' => $steps_array
         ], Response::HTTP_OK);
     }
 

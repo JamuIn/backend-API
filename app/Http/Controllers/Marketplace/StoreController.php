@@ -39,17 +39,11 @@ class StoreController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'name' => 'required',
             'description' => 'required',
             'payment_address' => 'required',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'errors' => $validator->errors()
-            ], Response::HTTP_BAD_REQUEST);
-        }
 
         // Check if the user already has a store
         $store = Store::where('user_id', $user->id)->first();
@@ -138,17 +132,11 @@ class StoreController extends Controller
             ], Response::HTTP_FORBIDDEN);
         }
 
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'name' => 'required',
             'description' => 'required',
             'payment_address' => 'required',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'errors' => $validator->errors()
-            ], Response::HTTP_BAD_REQUEST);
-        }
 
         if ($request->hasFile('image')) {
             $request->validate([

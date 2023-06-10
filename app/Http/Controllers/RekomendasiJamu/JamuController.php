@@ -154,9 +154,9 @@ class JamuController extends Controller
      * @param  int  $id
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function destroy($id)
+    public function destroy(Jamu $jamu)
     {
-        $jamu = Jamu::findOrFail($id);
+        $jamu = Jamu::findOrFail($jamu->id);
         $image = substr(strrchr($jamu->image, "/"), 1);
         $this->deleteImageFile($image);
         $ingredient = Ingredient::query()->findOrFail($jamu->ingredients()->first()->id);

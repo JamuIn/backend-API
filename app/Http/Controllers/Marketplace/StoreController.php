@@ -38,11 +38,11 @@ class StoreController extends Controller
     public function store(Request $request)
     {
         $user = auth()->user();
-        // $request->validate([
-        //     'name' => 'required',
-        //     'description' => 'required',
-        //     'payment_address' => 'required',
-        // ]);
+        $request->validate([
+            'name' => 'required',
+            'description' => 'required',
+            'payment_address' => 'required',
+        ]);
 
         // Check if the user already has a store
         $store = Store::where('user_id', $user->id)->first();

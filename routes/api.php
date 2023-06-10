@@ -13,6 +13,7 @@ use App\Http\Controllers\RekomendasiJamu\IngredientController;
 use App\Http\Controllers\RekomendasiJamu\JamuCategoryController;
 use App\Http\Controllers\Marketplace\IngredientProductController;
 use App\Http\Controllers\RekomendasiJamu\IngredientJamuController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,12 +27,11 @@ use App\Http\Controllers\RekomendasiJamu\IngredientJamuController;
 */
 
 // AUTH CONTROLLER
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+route::post('/user/{id}', [UserController::class, 'updateUser']);
+Route::apiResource('/users', UserController::class)->except('update');
 
 // ROUTES FOR REKOMEDASI JAMU
 Route::post('/jamu/{id}', [JamuController::class, 'updateJamu'])->name('jamu.update');

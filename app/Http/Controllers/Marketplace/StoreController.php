@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\Marketplace\Store;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 class StoreController extends Controller
@@ -38,12 +37,12 @@ class StoreController extends Controller
      */
     public function store(Request $request)
     {
-        $user = Auth::user();
-        $request->validate([
-            'name' => 'required',
-            'description' => 'required',
-            'payment_address' => 'required',
-        ]);
+        $user = auth()->user();
+        // $request->validate([
+        //     'name' => 'required',
+        //     'description' => 'required',
+        //     'payment_address' => 'required',
+        // ]);
 
         // Check if the user already has a store
         $store = Store::where('user_id', $user->id)->first();

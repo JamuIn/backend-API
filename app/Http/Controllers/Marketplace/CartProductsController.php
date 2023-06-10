@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Marketplace;
 use Illuminate\Http\Request;
 use App\Models\Marketplace\Cart;
 use App\Models\Marketplace\Order;
+use Illuminate\Support\Facades\DB;
 use App\Models\Marketplace\Product;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CartResource;
@@ -58,44 +59,51 @@ class CartProductsController extends Controller
                 ], Response::HTTP_NOT_ACCEPTABLE);
             }
         }
+        try {
+            DB::transaction(function () use ($cart) {
+                // create the order
+                $order = Order::create([
+                    'user_id' => auth()->user()->id,
+                    'total_price' => 0,
+                    'status' => 'Unpaid'
+                ]);
 
-        // create the order
-        $order = Order::create([
-            'user_id' => auth()->user()->id,
-            'total_price' => 0,
-            'status' => 'Unpaid'
-        ]);
+                $products_ordered = [];
+                $total_price = 0;
+                $payment_address = "Gopay 0881 2345 6789 - A.n Hakam Royhan A";
 
-        $products_ordered = [];
-        $total_price = 0;
-        $payment_address = "Gopay 0881 2345 6789 - A.n Hakam Royhan A";
+                // attach each product to order in OrderProduct
+                foreach ($cart as $cartProduct) {
+                    $order->products()->attach($cartProduct->product_id, [
+                        'quantity' => $cartProduct->quantity,
+                        'price' => $cartProduct->product->price
+                    ]);
+                    // count total price
+                    $price = $cartProduct->quantity * $cartProduct->product->price;
+                    $order->increment('total_price', $price);
+                    $total_price += $price;
+                    // decrease product stock
+                    Product::find($cartProduct->product_id)->decrement('stock', $cartProduct->quantity);
+                    // add product to response
+                    $products_ordered[] = $cartProduct->product->name . ', quantity: ' . $cartProduct->quantity;
+                }
+                // add shipping fee
+                $order->increment('total_price', 10000);
+                // delete cart after checkout
+                Cart::where('user_id', auth()->user()->id)->delete();
 
-        // attach each product to order in OrderProduct
-        foreach ($cart as $cartProduct) {
-            $order->products()->attach($cartProduct->product_id, [
-                'quantity' => $cartProduct->quantity,
-                'price' => $cartProduct->product->price
-            ]);
-            // count total price
-            $price = $cartProduct->quantity * $cartProduct->product->price;
-            $order->increment('total_price', $price);
-            $total_price += $price;
-            // decrease product stock
-            Product::find($cartProduct->product_id)->decrement('stock', $cartProduct->quantity);
-            // add product to response
-            $products_ordered[] = $cartProduct->product->name . ', quantity: ' . $cartProduct->quantity;
+                return response()->json([
+                    'message' => 'Checkout success',
+                    'order' => $order,
+                    'products' => $products_ordered,
+                    'total_price' => $total_price + 10000,
+                    'payment_address' => $payment_address
+                ], Response::HTTP_CREATED);
+            });
+        } catch (\Exception $exception) {
+            return response()->json([
+                'message' => 'Error Happened ' . $exception->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        // add shipping fee
-        $order->increment('total_price', 10000);
-        // delete cart after checkout
-        Cart::where('user_id', auth()->user()->id)->delete();
-
-        return response()->json([
-            'message' => 'Checkout success',
-            'order' => $order,
-            'products' => $products_ordered,
-            'total_price' => $total_price + 10000,
-            'payment_address' => $payment_address
-        ], Response::HTTP_CREATED);
     }
 }

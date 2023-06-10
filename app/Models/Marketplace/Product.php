@@ -2,10 +2,12 @@
 
 namespace App\Models\Marketplace;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Marketplace\Review;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model
 {
@@ -25,5 +27,10 @@ class Product extends Model
     public function cart(): HasOne
     {
         return $this->hasOne(Cart::class);
+    }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
     }
 }

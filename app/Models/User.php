@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Marketplace\Cart;
 use App\Models\Marketplace\Order;
 use App\Models\Marketplace\Store;
+use App\Models\RekomendasiJamu\Favorite;
 use Spatie\Permission\Traits\HasRoles;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

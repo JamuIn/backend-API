@@ -12,6 +12,6 @@ class JamuCategory extends Model
 
     public function jamu()
     {
-        return $this->hasMany('App\Models\RekomendasiJamu\Jamu');
+        return $this->hasMany(Jamu::class);
     }
 }

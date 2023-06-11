@@ -3,6 +3,7 @@
 namespace App\Models\Marketplace;
 
 use App\Models\Marketplace\Review;
+use App\Models\RekomendasiJamu\Ingredient;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,7 +22,7 @@ class Product extends Model
 
     public function ingredients()
     {
-        return $this->belongsToMany('App\Models\RekomendasiJamu\Ingredient');
+        return $this->belongsToMany(Ingredient::class);
     }
 
     public function cart(): HasOne

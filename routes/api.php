@@ -10,6 +10,7 @@ use App\Http\Controllers\Marketplace\StoreController;
 use App\Http\Controllers\RekomendasiJamu\JamuController;
 use App\Http\Controllers\Marketplace\CartProductsController;
 use App\Http\Controllers\Marketplace\StoreProductController;
+use App\Http\Controllers\RekomendasiJamu\JamuUserController;
 use App\Http\Controllers\Marketplace\ProductReviewController;
 use App\Http\Controllers\RekomendasiJamu\IngredientController;
 use App\Http\Controllers\RekomendasiJamu\JamuCategoryController;
@@ -48,9 +49,16 @@ Route::post('/jamu/{jamuId}/ingredients', [IngredientJamuController::class, 'att
     ->name('jamu.ingredients.attach');
 Route::delete('/jamu/{jamuId}/ingredients/{ingredientId}', [IngredientJamuController::class, 'detachIngredientFromJamu'])
     ->name('jamu.ingredients.detach');
+// Many to many relationship for Jamu and User (Add jamu ass favorite)
+Route::get('/user/favorites', [JamuUserController::class, 'showFavorites']);
+Route::post('/jamu/{jamuId}/favorite', [JamuUserController::class, 'addJamuToUserFavorite'])
+    ->name('jamu.favorite.attach');
+Route::delete('/jamu/{jamuId}/favorite', [JamuUserController::class, 'detachJamuFromUserFavorite'])
+    ->name('jamu.favorite.detach');
 
 // MARKETPLACE ROUTE -PRODUCTS
 Route::get('/products', [StoreProductController::class, 'indexAll'])->name('products.indexAll');
+Route::get('/products/{id}', [StoreProductController::class, 'showProduct'])->name('products.showProduct');
 Route::post('/stores/{store}/products/{product}', [StoreProductController::class, 'updateProduct'])->name('products.update');
 Route::resource('/stores.products', StoreProductController::class)->except(['create', 'edit']);
 // Many-to-many relationship for product and ingredients

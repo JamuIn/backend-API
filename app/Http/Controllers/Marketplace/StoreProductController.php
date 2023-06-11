@@ -15,7 +15,7 @@ class StoreProductController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth:sanctum', 'role:seller'])->except(['indexAll', 'index', 'show']);
+        $this->middleware(['auth:sanctum', 'role:seller'])->except(['indexAll', 'index', 'show', 'showProduct']);
     }
     /**
      * Display a listing of the resource.
@@ -36,6 +36,14 @@ class StoreProductController extends Controller
 
         return response()->json([
             'products' => $products,
+        ], Response::HTTP_OK);
+    }
+
+    public function showProduct($id)
+    {
+        $product = new ProductResource(Product::find($id));
+        return response()->json([
+            'product' => $product,
         ], Response::HTTP_OK);
     }
 

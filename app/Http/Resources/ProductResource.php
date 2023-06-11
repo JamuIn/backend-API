@@ -24,12 +24,13 @@ class ProductResource extends JsonResource
             'jamu_category_id' => $this->jamu_category_id,
             'main_ingredient' => $ingredient,
             'name' => $this->name,
+            'seller' => $this->store->name,
             'description' => $this->description,
             'image' => $this->image,
             'price' => $this->price,
             'stock' => $this->stock,
             'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at
+            'updated_at' => $this->updated_at,
         ];
     }
 }

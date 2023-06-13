@@ -81,7 +81,7 @@ Route::post('/orders/{order}', [OrderController::class, 'updateOrder']);
 Route::apiResource('/orders', OrderController::class);
 
 // MARKETPLACE --CHECKOUT
-Route::get('/confirm-checkout', [CartProductsController::class, 'confirmCheckout']);
+Route::post('/confirm-checkout', [CartProductsController::class, 'confirmCheckout']);
 Route::post('/checkout', [CartProductsController::class, 'checkout']);
 
 // MARKETPLACE -- PRODUCT REVIEWS

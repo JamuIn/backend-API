@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Marketplace;
 use Illuminate\Http\Request;
 use App\Models\Marketplace\Order;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -12,7 +13,7 @@ class OrderController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth:sanctum', 'role:customer'])->except(['index']);
+        $this->middleware(['auth:sanctum', 'role:customer'])->except(['updateOrder']);
         $this->middleware(['auth:sanctum', 'role:admin'])->only(['index']);
     }
 
@@ -86,10 +87,17 @@ class OrderController extends Controller
      */
     public function updateOrder(Request $request, Order $order)
     {
-        $request->validate([
-            'total_price' => 'required|integer',
-            'status' => 'required|string'
-        ]);
+        $user = auth()->user();
+        $role = User::find($user->id)->getRoleNames();
+
+        if ($role[0] == 'seller') {
+            $request->validate([
+                'status' => 'required|string'
+            ]);
+
+            $order->status = $request->input('status');
+            $order->save();
+        }
 
         if ($request->hasFile('payment_proof')) {
             $request->validate([
@@ -107,10 +115,6 @@ class OrderController extends Controller
             }
             $order->payment_proof = $imageUrl;
         }
-
-        $order->total_price = $request->input('total_price');
-        $order->status = $request->input('status');
-        $order->save();
 
         return response()->json(['order' => $order], Response::HTTP_OK);
     }

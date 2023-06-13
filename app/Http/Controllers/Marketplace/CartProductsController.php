@@ -14,12 +14,16 @@ use Symfony\Component\HttpFoundation\Response;
 class CartProductsController extends Controller
 {
 
-    public function confirmCheckout()
+    public function confirmCheckout(Request $request)
     {
+        $request->validate([
+            'payment_address' => 'required|string'
+        ]);
+
         $user = auth()->user();
         $carts = CartResource::collection(Cart::where('user_id', $user->id)->get());
         $address = $user->address;
-        $payment_address = "Gopay 0881 2345 6789 - A.n Hakam Royhan A";
+        $payment_address = $request->payment_address;
 
         // get product detail
         $product_detail = [];

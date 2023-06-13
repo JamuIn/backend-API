@@ -72,11 +72,11 @@ Route::post('/stores/{id}', [StoreController::class, 'updateStore']);
 Route::apiResource('/stores', StoreController::class);
 
 // MARKETPLACE ROUTES --CART
-Route::get('/user/{userId}/carts', [CartController::class, 'getUserCart']);
+Route::get('/user/carts', [CartController::class, 'getUserCart']);
 Route::apiResource('/carts', CartController::class);
 
 // MARKETPLACE --ORDERS
-Route::get('/user/{userId}/orders', [OrderController::class, 'getUserOrder']);
+Route::get('/user/orders', [OrderController::class, 'getUserOrder']);
 Route::post('/orders/{order}', [OrderController::class, 'updateOrder']);
 Route::apiResource('/orders', OrderController::class);
 

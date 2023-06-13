@@ -28,16 +28,17 @@ class OrderController extends Controller
         return response()->json(['orders' => $orders], Response::HTTP_OK);
     }
 
-    public function getUserOrder($userId)
+    public function getUserOrder()
     {
-        $last_order = Order::where('user_id', $userId)->first();
-        if ($last_order->user_id != $userId) {
+        $user = Auth::user();
+        $last_order = Order::where('user_id', $user->id)->first();
+        if ($last_order->user_id != $user->id) {
             return response()->json([
                 'error' => 'You are not authorized to see this order'
             ], Response::HTTP_FORBIDDEN);
         };
 
-        $orders = Order::where('user_id', $userId)->get();
+        $orders = Order::where('user_id', $user->id)->get();
 
 
         return response()->json(['orders' => $orders], Response::HTTP_OK);

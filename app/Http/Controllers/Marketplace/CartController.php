@@ -37,9 +37,10 @@ class CartController extends Controller
      * @param  int  $userId
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function getUserCart($userId)
+    public function getUserCart()
     {
-        $carts = CartResource::collection(Cart::where('user_id', $userId)->get());
+        $user = Auth::user();
+        $carts = CartResource::collection(Cart::where('user_id', $user->id)->get());
 
         return response()->json(['carts' => $carts], Response::HTTP_OK);
     }

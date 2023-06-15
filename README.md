@@ -9,7 +9,6 @@ Welcome to the JamuIN backend API repository! This API powers the innovative Jam
 | ID          | Name                            | University                      | Specialization     |
 | ----------- | ------------------------------- | ------------------------------- | ------------------ |
 | C125DKX4521 | Sadam Alfian Pradana            | UIN Syarif Hidayatullah Jakarta | Cloud Computing    |
-| ----------- | ------------------------------- | ------------------------------- | ------------------ |
 
 ## API Endpoints
 We have documented the extensive API for the marketplace feature using the Postman Documenter. This documentation provides detailed information about each endpoint, including functionalities, request parameters, response structures, and example requests and responses.

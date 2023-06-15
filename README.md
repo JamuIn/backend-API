@@ -22,8 +22,9 @@ To start using the JamuIN backend API, follow the steps below:
 
 ### Prerequisites
 
--   PHP 7.4 or higher
+-   PHP 8 or higher
 -   Composer
+-   MySql Database
 
 ### Installation
 

@@ -13,7 +13,7 @@ Welcome to the JamuIN backend API repository! This API powers the innovative Jam
 ## API Endpoints
 We have documented the extensive API for the marketplace feature using the Postman Documenter. This documentation provides detailed information about each endpoint, including functionalities, request parameters, response structures, and example requests and responses.
 
-To access the API documentation, visit [JamuIN API Documentation]([https://example.com/api-documentation](https://documenter.getpostman.com/view/14170928/2s93sc6DNG)).
+To access the API documentation, visit [JamuIN API Documentation](https://documenter.getpostman.com/view/14170928/2s93sc6DNG).
 
 
 ## Getting Started

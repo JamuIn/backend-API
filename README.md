@@ -4,23 +4,17 @@
 
 Welcome to the JamuIN backend API repository! This API powers the innovative JamuIN Android application, which provides users with homemade Jamu recipes and recommendations for purchasing Jamu products from local micro, small, and medium enterprises (UMKM). The app also features a marketplace for supporting local Jamu UMKM.
 
-## Why Laravel? 🦄
+## Contributor
 
-> Why did we choose Laravel for our magical JamuIN backend?
+| ID          | Name                            | University                      | Specialization     |
+| ----------- | ------------------------------- | ------------------------------- | ------------------ |
+| C125DKX4521 | Sadam Alfian Pradana            | UIN Syarif Hidayatullah Jakarta | Cloud Computing    |
 
-Laravel is like the secret ingredient in our Jamu recipe. It brings the perfect blend of power, simplicity, and joy to our project.
+## API Endpoints
+We have documented the extensive API for the marketplace feature using the Postman Documenter. This documentation provides detailed information about each endpoint, including functionalities, request parameters, response structures, and example requests and responses.
 
--   **Elegant and Easy:** Laravel has a clean and straightforward syntax that makes coding a breeze. It's like the smoothest Jamu you'll ever taste.
+To access the API documentation, visit [JamuIN API Documentation](https://documenter.getpostman.com/view/14170928/2s93sc6DNG).
 
--   **Organized Magic:** With Laravel's clear structure, we can separate different parts of our code and keep everything tidy. It's like having neatly labeled jars for each herbal ingredient in our Jamu cabinet.
-
--   **Security Shield:** Laravel comes with built-in security measures that protect our app from malicious attacks. It's like having a magical shield that repels any digital bad spirits trying to spoil our Jamu party.
-
--   **Friendly Community:** Laravel has a large and helpful community of developers who share their knowledge and support each other. It's like being part of a fun and welcoming herbal family, where we exchange Jamu recipes and laugh together.
-
--   **Meme Magic:** Laravel brings a touch of humor to our development journey. We laugh at Laravel memes while creating awesome features for JamuIN. Who said coding can't be funny? It's like adding a sprinkle of laughter to our delicious Jamu potion.
-
-So, let's raise our virtual Jamu glasses and embrace the magical powers of Laravel for our JamuIN backend API! 🍹✨
 
 ## Getting Started
 
@@ -28,8 +22,9 @@ To start using the JamuIN backend API, follow the steps below:
 
 ### Prerequisites
 
--   PHP 7.4 or higher
+-   PHP 8 or higher
 -   Composer
+-   MySql Database
 
 ### Installation
 
@@ -45,8 +40,4 @@ To start using the JamuIN backend API, follow the steps below:
 
 This project is licensed under the [MIT License](LICENSE). Feel free to use, modify, and distribute the code as you please.
 
----
-
-## Under Development 🚧
-
-Created with 💚 by the JamuIN Team 🌿🧪
+### Created with 💚 by the JamuIN Team 🌿🧪
